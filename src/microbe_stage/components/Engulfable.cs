@@ -1,4 +1,4 @@
-﻿namespace Components;
+﻿      namespace Components;
 
 using System;
 using System.Collections.Generic;
@@ -210,6 +210,8 @@ public struct Engulfable : IArchivableComponent
 
 public static class EngulfableHelpers
 {
+    extension(ref Engulfable engulfable)
+    {
     public static Engulfable ReadFromArchive(ISArchiveReader reader, ushort version)
     {
         if (version is > Engulfable.SERIALIZATION_VERSION or <= 0)
@@ -234,7 +236,7 @@ public static class EngulfableHelpers
     /// <summary>
     ///   Effective size of the engulfable for engulfability calculations
     /// </summary>
-    public static float EffectiveEngulfSize(this ref Engulfable engulfable)
+    public float EffectiveEngulfSize()
     {
         return engulfable.BaseEngulfSize * (1 - engulfable.DigestedAmount);
     }
@@ -247,7 +249,7 @@ public static class EngulfableHelpers
     ///   The extra compounds to add (this also shouldn't have any 0 values in it for clarity). Or null if there
     ///   aren't any extra digestible compounds.
     /// </returns>
-    public static Dictionary<Compound, float>? CalculateAdditionalDigestibleCompounds(this ref Engulfable engulfable,
+    public Dictionary<Compound, float>? CalculateAdditionalDigestibleCompounds(
         in Entity entity)
     {
         // Extra digestible compounds for microbes
@@ -265,7 +267,7 @@ public static class EngulfableHelpers
     ///   Called when this becomes engulfed and starts to be pulled in (this may get immediately thrown out if this
     ///   is not digestible by the attacker)
     /// </summary>
-    public static void OnBecomeEngulfed(this ref Engulfable engulfable, in Entity entity,
+    public void OnBecomeEngulfed( in Entity entity,
         int engulferRenderPriority)
     {
         if (entity.Has<CellProperties>())
@@ -329,7 +331,7 @@ public static class EngulfableHelpers
             // +2 is used here as the membrane also takes one render priority slot
             renderPriority.RenderPriority = engulferRenderPriority + Constants.HEX_MAX_RENDER_PRIORITY + 2;
             renderPriority.RenderPriorityApplied = false;
-
+            GD.Print("apparently this is working now");
             // TODO: the above doesn't take recursive engulfing into account but that's probably fine enough for now
             // If the above is done, IngestEngulfableFromOtherEntity might also need changes
         }
@@ -339,7 +341,7 @@ public static class EngulfableHelpers
     ///   Called when it is confirmed that an engulfable will be digested (i.e. will not be thrown out immediately
     ///   due to being inedible)
     /// </summary>
-    public static void OnReportBecomeIngestedIfCallbackRegistered(this ref Engulfable engulfable, in Entity entity)
+    public void OnReportBecomeIngestedIfCallbackRegistered(in Entity entity)
     {
         if (!entity.Has<MicrobeEventCallbacks>())
             return;
@@ -359,7 +361,7 @@ public static class EngulfableHelpers
     ///     chunks as a special case for a microbe that basically died during engulfment.
     ///   </para>
     /// </remarks>
-    public static void OnExpelledFromEngulfment(this ref Engulfable engulfable, in Entity entity,
+    public void OnExpelledFromEngulfment( in Entity entity,
         ISpawnSystem spawnSystem, IWorldSimulation worldSimulation)
     {
         // Restore scale
@@ -547,4 +549,4 @@ public static class EngulfableHelpers
         CalculateBonusDigestibleGlucose(result, heldCompounds.Compounds);
         return result;
     }
-}
+}}
